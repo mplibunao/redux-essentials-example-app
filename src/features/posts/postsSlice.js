@@ -1,8 +1,19 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit'
+import { getRandomInitialUser } from '../users/usersSlice'
 
 const initialState = [
-  { id: nanoid(), title: 'First Post!', content: 'Hello!' },
-  { id: nanoid(), title: 'Second Post!', content: 'More text' },
+  {
+    id: nanoid(),
+    title: 'First Post!',
+    content: 'Hello!',
+    user: getRandomInitialUser().id,
+  },
+  {
+    id: nanoid(),
+    title: 'Second Post!',
+    content: 'More text',
+    user: getRandomInitialUser().id,
+  },
 ]
 
 const postsSlice = createSlice({

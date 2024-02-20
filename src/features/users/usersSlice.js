@@ -6,6 +6,11 @@ const initialState = [
   { id: nanoid(), name: 'Madison Price' },
 ]
 
+export const getRandomInitialUser = () => {
+  const randomIndex = Math.floor(Math.random() * initialState.length)
+  return initialState[randomIndex]
+}
+
 const usersSlice = createSlice({
   name: 'users',
   initialState,

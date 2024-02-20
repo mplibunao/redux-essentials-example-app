@@ -1,9 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { nanoid } from '@reduxjs/toolkit'
+import { createSlice, nanoid } from '@reduxjs/toolkit'
 
 const initialState = [
-  { id: '1', title: 'First Post!', content: 'Hello!' },
-  { id: '2', title: 'Second Post!', content: 'More text' },
+  { id: nanoid(), title: 'First Post!', content: 'Hello!' },
+  { id: nanoid(), title: 'Second Post!', content: 'More text' },
 ]
 
 const postsSlice = createSlice({

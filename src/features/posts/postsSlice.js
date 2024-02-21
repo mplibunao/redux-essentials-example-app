@@ -1,6 +1,4 @@
 import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit'
-import { getRandomInitialUser } from '../users/usersSlice'
-import { sub } from 'date-fns'
 import { client } from '../../api/client'
 
 const reactions = {

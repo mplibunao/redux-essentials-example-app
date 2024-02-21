@@ -1,20 +1,22 @@
-import { nanoid, createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { client } from '../../api/client'
 
-const initialState = [
-  { id: nanoid(), name: 'Tianna Jenkins' },
-  { id: nanoid(), name: 'Kevin Grantt' },
-  { id: nanoid(), name: 'Madison Price' },
-]
+const initialState = []
 
-export const getRandomInitialUser = () => {
-  const randomIndex = Math.floor(Math.random() * initialState.length)
-  return initialState[randomIndex]
-}
+export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
+  const response = await client.get('/fakeApi/users')
+  return response.data
+})
 
 const usersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {},
+  extraReducers(builder) {
+    builder.addCase(fetchUsers.fulfilled, (state, action) => {
+      return action.payload
+    })
+  },
 })
 
 export const usersReducer = usersSlice.reducer

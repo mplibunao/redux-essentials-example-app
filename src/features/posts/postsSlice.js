@@ -1,6 +1,7 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit'
 import { getRandomInitialUser } from '../users/usersSlice'
 import { sub } from 'date-fns'
+import { client } from '../../api/client'
 
 const reactions = {
   thumbsUp: 0,
@@ -10,24 +11,16 @@ const reactions = {
   eyes: 0,
 }
 
-const initialState = [
-  {
-    id: nanoid(),
-    date: sub(new Date(), { minutes: 10 }).toISOString(),
-    title: 'First Post!',
-    content: 'Hello!',
-    user: getRandomInitialUser().id,
-    reactions,
-  },
-  {
-    id: nanoid(),
-    date: sub(new Date(), { minutes: 5 }).toISOString(),
-    title: 'Second Post!',
-    content: 'More text',
-    user: getRandomInitialUser().id,
-    reactions,
-  },
-]
+const initialState = {
+  posts: [],
+  status: 'idle',
+  error: null,
+}
+
+export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
+  const response = await client.get('/fakeApi/posts')
+  return response.data
+})
 
 const postsSlice = createSlice({
   name: 'posts',
@@ -35,14 +28,14 @@ const postsSlice = createSlice({
   reducers: {
     reactionAdded(state, action) {
       const { postId, reaction } = action.payload
-      const existingPost = state.find((post) => post.id === postId)
+      const existingPost = state.posts.find((post) => post.id === postId)
       if (existingPost) {
         existingPost.reactions[reaction]++
       }
     },
     postAdded: {
       reducer(state, action) {
-        state.push(action.payload)
+        state.posts.push(action.payload)
       },
       prepare(title, content, userId) {
         return {
@@ -58,19 +51,33 @@ const postsSlice = createSlice({
     },
     postUpdated(state, action) {
       const { id, title, content } = action.payload
-      const existingPost = state.find((post) => post.id === id)
+      const existingPost = state.posts.find((post) => post.id === id)
       if (existingPost) {
         existingPost.title = title
         existingPost.content = content
       }
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPosts.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(fetchPosts.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        state.posts = state.posts.concat(action.payload)
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.massage
+      })
+  },
 })
 
 export const postsReducer = postsSlice.reducer
 export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions
 
-export const selectAllPosts = (state) => state.posts
+export const selectAllPosts = (state) => state.posts.posts
 
 export const selectPostById = (state, postId) =>
-  state.posts.find((post) => post.id === postId)
+  state.posts.posts.find((post) => post.id === postId)

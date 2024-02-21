@@ -2,6 +2,14 @@ import { createSlice, nanoid } from '@reduxjs/toolkit'
 import { getRandomInitialUser } from '../users/usersSlice'
 import { sub } from 'date-fns'
 
+const reactions = {
+  thumbsUp: 0,
+  hooray: 0,
+  heart: 0,
+  rocket: 0,
+  eyes: 0,
+}
+
 const initialState = [
   {
     id: nanoid(),
@@ -9,6 +17,7 @@ const initialState = [
     title: 'First Post!',
     content: 'Hello!',
     user: getRandomInitialUser().id,
+    reactions,
   },
   {
     id: nanoid(),
@@ -16,6 +25,7 @@ const initialState = [
     title: 'Second Post!',
     content: 'More text',
     user: getRandomInitialUser().id,
+    reactions,
   },
 ]
 
@@ -23,6 +33,13 @@ const postsSlice = createSlice({
   name: 'posts',
   initialState,
   reducers: {
+    reactionAdded(state, action) {
+      const { postId, reaction } = action.payload
+      const existingPost = state.find((post) => post.id === postId)
+      if (existingPost) {
+        existingPost.reactions[reaction]++
+      }
+    },
     postAdded: {
       reducer(state, action) {
         state.push(action.payload)
@@ -51,4 +68,4 @@ const postsSlice = createSlice({
 })
 
 export const postsReducer = postsSlice.reducer
-export const { postAdded, postUpdated } = postsSlice.actions
+export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions

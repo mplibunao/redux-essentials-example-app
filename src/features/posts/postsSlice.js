@@ -1,17 +1,18 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit'
 import { getRandomInitialUser } from '../users/usersSlice'
+import { sub } from 'date-fns'
 
 const initialState = [
   {
     id: nanoid(),
-    date: new Date().toISOString(),
+    date: sub(new Date(), { minutes: 10 }).toISOString(),
     title: 'First Post!',
     content: 'Hello!',
     user: getRandomInitialUser().id,
   },
   {
     id: nanoid(),
-    date: new Date().toISOString(),
+    date: sub(new Date(), { minutes: 5 }).toISOString(),
     title: 'Second Post!',
     content: 'More text',
     user: getRandomInitialUser().id,

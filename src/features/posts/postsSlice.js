@@ -4,12 +4,14 @@ import { getRandomInitialUser } from '../users/usersSlice'
 const initialState = [
   {
     id: nanoid(),
+    date: new Date().toISOString(),
     title: 'First Post!',
     content: 'Hello!',
     user: getRandomInitialUser().id,
   },
   {
     id: nanoid(),
+    date: new Date().toISOString(),
     title: 'Second Post!',
     content: 'More text',
     user: getRandomInitialUser().id,
@@ -28,6 +30,7 @@ const postsSlice = createSlice({
         return {
           payload: {
             id: nanoid(),
+            date: new Date().toISOString(),
             title,
             content,
             user: userId,

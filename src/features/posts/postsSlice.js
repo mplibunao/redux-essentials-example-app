@@ -1,14 +1,6 @@
 import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 
-const reactions = {
-  thumbsUp: 0,
-  hooray: 0,
-  heart: 0,
-  rocket: 0,
-  eyes: 0,
-}
-
 const initialState = {
   posts: [],
   status: 'idle',
@@ -20,6 +12,14 @@ export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   return response.data
 })
 
+export const addNewPost = createAsyncThunk(
+  'posts/addNewPost',
+  async (initialPost) => {
+    const response = await client.post('/fakeApi/posts', initialPost)
+    return response.data
+  },
+)
+
 const postsSlice = createSlice({
   name: 'posts',
   initialState,
@@ -30,22 +30,6 @@ const postsSlice = createSlice({
       if (existingPost) {
         existingPost.reactions[reaction]++
       }
-    },
-    postAdded: {
-      reducer(state, action) {
-        state.posts.push(action.payload)
-      },
-      prepare(title, content, userId) {
-        return {
-          payload: {
-            id: nanoid(),
-            date: new Date().toISOString(),
-            title,
-            content,
-            user: userId,
-          },
-        }
-      },
     },
     postUpdated(state, action) {
       const { id, title, content } = action.payload
@@ -69,11 +53,14 @@ const postsSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.massage
       })
+      .addCase(addNewPost.fulfilled, (state, action) => {
+        state.posts.push(action.payload)
+      })
   },
 })
 
 export const postsReducer = postsSlice.reducer
-export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions
+export const { postUpdated, reactionAdded } = postsSlice.actions
 
 export const selectAllPosts = (state) => state.posts.posts
 

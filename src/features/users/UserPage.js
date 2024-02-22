@@ -11,7 +11,6 @@ export const UserPage = ({ match }) => {
 
   const postsForUser = useSelector((state) => {
     const allPosts = selectAllPosts(state)
-    console.info(allPosts, 'allPosts')
     return allPosts.filter((post) => post.user === userId)
   })
 
